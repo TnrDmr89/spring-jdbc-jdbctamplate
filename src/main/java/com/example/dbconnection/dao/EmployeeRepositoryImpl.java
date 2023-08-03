@@ -1,20 +1,16 @@
-package com.example.dbconnection.daoimp;
+package com.example.dbconnection.dao;
 
-import com.example.dbconnection.dao.EmployeeDao;
 import com.example.dbconnection.model.Employee;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Component
-public class EmployeeDaoImp implements EmployeeDao {
+public class EmployeeRepositoryImpl implements EmployeeRepository {
 
     /*
     * sql sorgusunu select için query metodu ya da insert,delete,update için update metodu ile çalıştırdığımızda
@@ -26,7 +22,7 @@ public class EmployeeDaoImp implements EmployeeDao {
 
     private JdbcTemplate jdbcTemplate;
 
-    public EmployeeDaoImp(JdbcTemplate jdbcTemplate){
+    public EmployeeRepositoryImpl(JdbcTemplate jdbcTemplate){
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -34,7 +30,7 @@ public class EmployeeDaoImp implements EmployeeDao {
             rs.getInt("age"),rs.getString("address"));
 
     @Override
-    //Bütün db kaydı çek
+    //Get all Employees
     public List<Employee> getAllEmployee() {
         String sql = "select * from employee";
         return jdbcTemplate.query(sql,rowMapper);
@@ -42,7 +38,7 @@ public class EmployeeDaoImp implements EmployeeDao {
     }
 
     @Override
-    //id ile tek bir veri çek
+    //Get employee with id
     public Optional<Employee> getEmployee(int id) {
         String sql = "select employee_id,name,age,address from employee where employee_id = ? ";
         Employee employee = null;
@@ -50,7 +46,7 @@ public class EmployeeDaoImp implements EmployeeDao {
     }
 
     @Override
-    //objeyi db'ye kaydet
+    //Save one employee to database
     public void save(Employee employee) {
        String sql = "INSERT INTO employee(employee_id, name, age, address) values (?,?,?,?)";
        Object[] args = new Object[]{employee.getEmployeeId(),employee.getName(),employee.getAge(),employee.getAddress()};
@@ -58,7 +54,7 @@ public class EmployeeDaoImp implements EmployeeDao {
     }
 
     @Override
-    //list'i dbye kaydet
+    //Save more than one employee to database
     public void saveListEmployee(List<Employee> employees) {
         String sql = "INSERT INTO employee(employee_id, name, age, address) values (?,?,?,?)";
         int[][] number = jdbcTemplate.batchUpdate(sql,employees,100,(PreparedStatement ps, Employee employee)->{
@@ -70,35 +66,35 @@ public class EmployeeDaoImp implements EmployeeDao {
     }
 
     @Override
-    //id ile kaydı güncelle
+    //Update employee with id in database
     public void update(int id, Employee employee) {
         String sql = "update employee set name = ?, age = ?, address = ? where employee_id = ?";
         jdbcTemplate.update(sql,employee.getName(),employee.getAge(),employee.getAddress(),id);
     }
 
     @Override
-    //isimli kaydı sil
+    //Delete employee with name in database
     public void delete(String name) {
         String sql = "delete from employee where name LIKE CONCAT( ?, '%') ";
         jdbcTemplate.update(sql,name);
     }
 
     @Override
-    //yaşa göre arama yap
+    //Get employeeses who being grater than ?age in database
     public List<Employee> getGraterThanAge(int age) {
         String sql = "select employee_id,name,age,address from employee where age > ?";
         return jdbcTemplate.query(sql,new Object[]{age},rowMapper);
     }
 
     @Override
-    //isme göre arama yap
+    //Get employeeses who being ?name in database
     public List<Employee> getNameWith(String name) {
         String sql = "select employee_id,name,age,address from employee where name = ?";
         return jdbcTemplate.query(sql,rowMapper,name);
     }
 
     @Override
-    //isim ve yaşa göre arama yap
+    //Get employeeses who being grater and equal than ?age and ?name in database
     public List<Employee> getSameNameAndAge(String name, int age) {
         String sql = "select employee_id,name,age,address from employee where name = ? and age >= ?";
         return jdbcTemplate.query(sql,new Object[]{name,age},rowMapper);

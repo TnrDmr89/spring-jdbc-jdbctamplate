@@ -5,7 +5,7 @@ import com.example.dbconnection.model.Employee;
 import java.util.List;
 import java.util.Optional;
 
-public interface EmployeeDao{
+public interface EmployeeRepository {
 
 
     List<Employee> getAllEmployee();

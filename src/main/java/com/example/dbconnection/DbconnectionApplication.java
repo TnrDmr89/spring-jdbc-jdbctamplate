@@ -1,19 +1,17 @@
 package com.example.dbconnection;
 
-import com.example.dbconnection.dao.EmployeeDao;
+import com.example.dbconnection.dao.EmployeeRepository;
 import com.example.dbconnection.model.Employee;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import java.util.Arrays;
 
 @SpringBootApplication
 public class DbconnectionApplication {
 
 
-	private static EmployeeDao employeeDao;
+	private static EmployeeRepository employeeDao;
 
-	public DbconnectionApplication(EmployeeDao employeeDao) {
+	public DbconnectionApplication(EmployeeRepository employeeDao) {
 		this.employeeDao = employeeDao;
 	}
 
